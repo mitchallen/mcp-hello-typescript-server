@@ -18,6 +18,12 @@ updates:
       # the SDK's expected schema types. Still get 3.x minor/patch updates.
       - dependency-name: "zod"
         update-types: ["version-update:semver-major"]
+      # Hold at typescript 5.x: 7.0.x is the new native (Go) compiler and no
+      # longer auto-includes @types/*, so a major bump needs a tsconfig change
+      # (types: ["node"]) to build. Too fresh to adopt mid-scaffold; still get
+      # 5.x minor/patch updates.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
 
   # Base images in the Dockerfile (chainguard/node builder + runtime).
   - package-ecosystem: docker
