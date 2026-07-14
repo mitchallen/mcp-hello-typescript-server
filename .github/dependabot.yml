@@ -12,6 +12,12 @@ updates:
       interval: weekly
     commit-message:
       prefix: "deps"
+    ignore:
+      # Pin zod to 3.x: the MCP TypeScript SDK and the official "Build a server"
+      # reference target zod 3, and zod 4 is a breaking major incompatible with
+      # the SDK's expected schema types. Still get 3.x minor/patch updates.
+      - dependency-name: "zod"
+        update-types: ["version-update:semver-major"]
 
   # Base images in the Dockerfile (chainguard/node builder + runtime).
   - package-ecosystem: docker
