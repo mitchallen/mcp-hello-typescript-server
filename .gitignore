@@ -1,0 +1,25 @@
+# Node build output
+/build
+
+# Dependencies
+/node_modules
+
+# Logs
+*.log
+npm-debug.log*
+
+# macOS
+.DS_Store
+._*
+
+# Windows
+Thumbs.db
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+
+# dotenv
+.env
+.env.*.local

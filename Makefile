@@ -1,0 +1,217 @@
+# Makefile with help command
+
+IMAGE ?= mcp-hello-typescript-server
+
+# Version bump level for `make release`: patch (default), minor, or major.
+BUMP ?= patch
+
+# Version literal lives in package.json ("version"); read it for builds/tags.
+VERSION := $(shell node -p "require('./package.json').version" 2>/dev/null)
+
+# Published image coordinates for pulling/running release images locally.
+# Switch registries with e.g. REGISTRY=docker.io/mitchallen, pin with TAG=0.1.1.
+REGISTRY ?= ghcr.io/mitchallen
+TAG ?= latest
+PUBLISHED_IMAGE ?= $(REGISTRY)/mcp-hello-typescript-server
+CONTAINER ?= mcp-hello-ts
+HTTP_PORT ?= 8000
+
+# Default target is help
+.PHONY: all
+all: help
+
+# Help target
+.PHONY: help
+help:
+	@echo "Available commands:"
+	@echo "  make install      - Install dependencies (npm ci)"
+	@echo "  make build        - Compile TypeScript to build/ (tsc)"
+	@echo "  make run          - Run the MCP server over stdio (from source via tsx)"
+	@echo "  make run-http     - Run the MCP server over streamable HTTP (PORT, default 8000)"
+	@echo "  make test         - Run the test suite (node --test)"
+	@echo "  make fmt          - Format the code (prettier --write)"
+	@echo "  make typecheck    - Type-check without emitting (tsc --noEmit)"
+	@echo "  make check        - fmt check + typecheck + test (the CI gate)"
+	@echo "  make release      - Bump version (BUMP=patch|minor|major), commit, tag, and push"
+	@echo "  make docker-build - Build the Docker image locally"
+	@echo "  make docker-run   - Run the locally-built image over HTTP on port 8000"
+	@echo "  make docker-pull  - Pull the published image (REGISTRY, TAG)"
+	@echo "  make docker-up    - Pull and run the published image detached (HTTP_PORT, TAG)"
+	@echo "  make docker-smoke - Smoke-test the running container's MCP endpoint (HTTP_PORT)"
+	@echo "  make docker-test  - Up + smoke + down in one shot (CI gate for a published image)"
+	@echo "  make docker-logs  - Follow logs of the running test container"
+	@echo "  make docker-down  - Stop the running test container"
+	@echo "  make scan         - Scan the Docker image for vulnerabilities (Trivy)"
+	@echo "  make docker-rm    - Remove the Docker image"
+	@echo "  make docker-prune - Prune unused Docker data"
+	@echo "  make clean        - Remove build output and node_modules"
+	@echo "  make help         - Display this help message"
+
+# Install dependencies from the committed lockfile.
+.PHONY: install
+install:
+	@echo "Installing dependencies with npm ci..."
+	npm ci
+
+# Compile TypeScript to build/.
+.PHONY: build
+build:
+	@echo "Building $(IMAGE) v$(VERSION)..."
+	npm run build
+
+# Run the server over stdio (default MCP transport), from source via tsx.
+.PHONY: run
+run:
+	MCP_TRANSPORT=stdio npm run --silent dev
+
+# Run the server over streamable HTTP, from source via tsx.
+.PHONY: run-http
+run-http:
+	MCP_TRANSPORT=http HOST=0.0.0.0 PORT=$${PORT:-8000} npm run --silent dev
+
+# Run tests (unit + in-memory integration).
+.PHONY: test
+test:
+	@echo "Running tests..."
+	npm test
+
+# Format the source with prettier.
+.PHONY: fmt
+fmt:
+	npm run fmt
+
+# Type-check without emitting output.
+.PHONY: typecheck
+typecheck:
+	npm run typecheck
+
+# The full local CI gate: formatting check, type-check, and tests.
+.PHONY: check
+check:
+	npm run fmt:check
+	npm run typecheck
+	npm test
+
+# Bump the "version" in package.json (+ package-lock.json), commit, tag, and
+# push. The pushed v* tag triggers the publish workflows (GHCR + Docker Hub).
+# Override the bump level with BUMP=minor or BUMP=major.
+.PHONY: release
+release:
+	@test -z "$$(git status --porcelain)" || { echo "Working tree is not clean; commit or stash first."; exit 1; }
+	@branch=$$(git rev-parse --abbrev-ref HEAD); \
+	test "$$branch" = "main" || { echo "Refusing to release from '$$branch'; switch to main."; exit 1; }
+	@cur=$(VERSION); \
+	next=$$(node -e "const s='$$cur'.split('.').map(Number);const b='$(BUMP)';if(b=='major'){s[0]++;s[1]=0;s[2]=0}else if(b=='minor'){s[1]++;s[2]=0}else if(b=='patch'){s[2]++}else{process.exit(1)}console.log(s.join('.'))") || { echo "BUMP must be patch, minor, or major"; exit 1; }; \
+	grep -qE "^## \[$$next\]" CHANGELOG.md || { echo "CHANGELOG.md has no entry for v$$next — add a '## [$$next] - YYYY-MM-DD' section (Keep a Changelog format, top of the file) before releasing."; exit 1; }; \
+	echo "Bumping version $$cur -> $$next..."; \
+	npm version "$$next" --no-git-tag-version >/dev/null; \
+	echo "Releasing v$$next..."; \
+	git add package.json package-lock.json; \
+	git commit -m "Release v$$next"; \
+	git tag "v$$next"; \
+	git push origin main; \
+	git push origin "v$$next"; \
+	echo "Creating GitHub release v$$next..."; \
+	notes=$$(awk -v v="$$next" '$$0 ~ "^## \\[" v "\\]" {flag=1; next} flag && /^## \[/ {exit} flag {print}' CHANGELOG.md); \
+	printf '%s\n' "$$notes" | gh release create "v$$next" --title "v$$next" --notes-file - ; \
+	echo "Pushed v$$next and created its GitHub release — the publish workflows will build and push the images."
+
+# Build Docker image locally.
+.PHONY: docker-build
+docker-build:
+	@echo "Building Docker image locally..."
+	docker build -t $(IMAGE) .
+
+# Run the locally-built image over HTTP on port 8000.
+.PHONY: docker-run
+docker-run:
+	docker run --rm -p 8000:8000 --name $(IMAGE) $(IMAGE)
+
+# --- Published image (for local testing of a release) --------------------
+
+# Pull the published image from the registry.
+#   make docker-pull                              # ghcr.io/mitchallen, latest
+#   make docker-pull REGISTRY=docker.io/mitchallen TAG=0.1.1
+.PHONY: docker-pull
+docker-pull:
+	@echo "Pulling $(PUBLISHED_IMAGE):$(TAG)..."
+	docker pull $(PUBLISHED_IMAGE):$(TAG)
+
+# Pull and run the published image detached over HTTP for local testing.
+# Override the host port with HTTP_PORT=9000.
+.PHONY: docker-up
+docker-up: docker-pull
+	-docker rm -f $(CONTAINER) 2>/dev/null || true
+	docker run -d --rm -p $(HTTP_PORT):8000 --name $(CONTAINER) $(PUBLISHED_IMAGE):$(TAG)
+	@echo "Running $(PUBLISHED_IMAGE):$(TAG) as '$(CONTAINER)'."
+	@echo "Connect an HTTP MCP client to http://localhost:$(HTTP_PORT)/mcp"
+
+# Smoke-test the running container: confirms the $(CONTAINER) container is up,
+# then performs a real MCP `initialize` handshake against the HTTP endpoint and
+# asserts the server identifies itself.
+.PHONY: docker-smoke
+docker-smoke:
+	@docker ps --filter "name=^/$(CONTAINER)$$" --filter "status=running" --format '{{.Names}}' \
+	  | grep -q "^$(CONTAINER)$$" \
+	  || { echo "FAIL: container '$(CONTAINER)' is not running. Start it with 'make docker-up'."; exit 1; }
+	@echo "Smoke-testing MCP endpoint at http://localhost:$(HTTP_PORT)/mcp ..."
+	@curl -fsS -L --max-time 10 \
+	  -X POST http://localhost:$(HTTP_PORT)/mcp \
+	  -H "Content-Type: application/json" \
+	  -H "Accept: application/json, text/event-stream" \
+	  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"make-smoke","version":"0"}}}' \
+	  | grep -q '"name":"mcp-hello-typescript-server"' \
+	  && echo "PASS: server responded to MCP initialize" \
+	  || { echo "FAIL: no valid MCP initialize response on port $(HTTP_PORT). Is 'make docker-up' running?"; exit 1; }
+
+# Follow logs of the running test container.
+.PHONY: docker-logs
+docker-logs:
+	docker logs -f $(CONTAINER)
+
+# Stop the running test container (started with --rm, so it is removed too).
+.PHONY: docker-down
+docker-down:
+	@echo "Stopping $(CONTAINER)..."
+	-docker stop $(CONTAINER)
+
+# End-to-end container check: up -> wait for readiness -> smoke -> down.
+# Always tears down (even if the smoke test fails) and exits with the smoke
+# test's status, so it works as a one-shot CI gate for a published image.
+.PHONY: docker-test
+docker-test:
+	@$(MAKE) --no-print-directory docker-up
+	@printf "Waiting for MCP endpoint on port $(HTTP_PORT)"; \
+	for i in $$(seq 1 30); do \
+	  if curl -sS -o /dev/null --max-time 2 http://localhost:$(HTTP_PORT)/mcp 2>/dev/null; then break; fi; \
+	  printf "."; sleep 1; \
+	done; echo
+	@$(MAKE) --no-print-directory docker-smoke; status=$$?; \
+	  $(MAKE) --no-print-directory docker-down; \
+	  exit $$status
+
+# Scan container for vulnerabilities using Trivy (fixable CRITICAL/HIGH fail).
+.PHONY: scan
+scan:
+	@echo "Scanning $(IMAGE) for vulnerabilities (fixable CRITICAL/HIGH fail)..."
+	@docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy \
+		image --severity CRITICAL,HIGH --ignore-unfixed --exit-code 1 $(IMAGE) \
+		|| { echo "Vulnerabilities found (or image not built — run 'make docker-build')."; exit 1; }
+
+# Remove Docker image.
+.PHONY: docker-rm
+docker-rm:
+	@echo "Removing Docker image..."
+	-docker rmi $(IMAGE)
+
+# Prune unused Docker data.
+.PHONY: docker-prune
+docker-prune:
+	@echo "Pruning unused Docker data..."
+	docker system prune -f
+
+# Clean build output and installed dependencies.
+.PHONY: clean
+clean:
+	@echo "Cleaning build output and node_modules..."
+	rm -rf build node_modules

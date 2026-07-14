@@ -1,0 +1,34 @@
+name: npm-audit
+# Scan the dependency tree against the npm advisory database. The image scan
+# (image-scan.yml) covers the OS layer of the runtime image; npm audit covers
+# the JavaScript packages compiled/bundled into node_modules. The two together
+# are the full "are we shipping known vulns?" gate.
+#
+# Fails on high/critical advisories in the PRODUCTION dependency tree
+# (--omit=dev), so a dev-only tooling advisory doesn't wedge every build. A
+# daily run catches advisories published against unchanged dependencies.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "23 6 * * *"
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: npm audit (production deps, fail on high/critical)
+        run: npm audit --omit=dev --audit-level=high

@@ -1,0 +1,16 @@
+# Ship only what the build needs (package.json/package-lock.json, tsconfig, and
+# src). Everything else is excluded so the build context stays small and
+# reproducible.
+.git
+.gitignore
+.github
+.dockerignore
+Dockerfile
+Makefile
+.claude
+node_modules
+build
+.DS_Store
+*.md
+tests
+.prettierignore
