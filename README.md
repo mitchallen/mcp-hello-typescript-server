@@ -275,6 +275,21 @@ Notes for remote use:
   it behind a reverse proxy, gateway, or network policy.
 - The endpoint path is `/mcp`.
 
+### Option C — npm package via `npx` (not implemented here)
+
+Because the server already exposes a `bin` entry point over stdio, it could also
+be distributed as an **npm package** and launched with `npx` — the usual pattern
+for MCP servers in Claude Code:
+
+```sh
+claude mcp add hello-ts -- npx -y <package-name>
+```
+
+Publishing to either the **public npm registry** (npmjs.com — zero-config `npx`)
+or **GitHub Packages** (scoped `@owner/…`, but consumers need a token in
+`.npmrc`) would enable this. It's left out of this demo on purpose to keep the
+focus on the Docker distribution path.
+
 ---
 
 ## Docker
