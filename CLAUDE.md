@@ -86,6 +86,21 @@ Two complementary gates, both in CI and reproducible locally:
 - **`scan-scheduled`** re-scans the published `:latest` daily so CVEs disclosed
   after build time still surface in the Security tab.
 
+### `@hono/node-server` override
+
+`package.json` pins a transitive `overrides` entry forcing
+`@modelcontextprotocol/sdk`'s `@hono/node-server` to `^2.0.11`. The SDK pins
+`^1.19.9`, but [GHSA-frvp-7c67-39w9](https://github.com/advisories/GHSA-frvp-7c67-39w9)
+(moderate, `serve-static` path traversal) affects **all** `<2.0.5` with no 1.x
+backport, so the range can only be cleared by moving to 2.x. It's unreachable
+here (the SDK imports only `getRequestListener`, never the vulnerable
+`serveStatic`; the flaw is Windows-only and we run Linux), but it surfaces in
+`npm audit` and every Dependabot scan. The 2.x line drops Node 18, which is fine
+— we already require `node >=20`. Remove this override once the SDK widens its
+range (tracked upstream in
+[modelcontextprotocol/typescript-sdk#2531](https://github.com/modelcontextprotocol/typescript-sdk/issues/2531))
+or once we move to SDK v2, which splits transports into optional packages.
+
 ## Gotchas
 
 - **`structuredContent` needs an index-signature type.** The greet result is a
