@@ -6,6 +6,22 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Security
+
+- Bumped the transitive `fast-uri` (via `@modelcontextprotocol/sdk` → `ajv`)
+  to `3.1.4`, clearing the high-severity
+  [GHSA-v2hh-gcrm-f6hx](https://github.com/advisories/GHSA-v2hh-gcrm-f6hx)
+  (host confusion via literal backslash) that was failing the `npm-audit` gate.
+- Added a `@hono/node-server` `overrides` entry pinning it to `^2.0.11` to clear
+  [GHSA-frvp-7c67-39w9](https://github.com/advisories/GHSA-frvp-7c67-39w9)
+  (moderate `serve-static` path traversal). The SDK pins `^1.19.9` and the
+  advisory has no patched 1.x line, so the range can only be cleared by moving
+  to the 2.x adapter. Safe here — the SDK imports only `getRequestListener`
+  (unchanged in 2.x, never the vulnerable `serveStatic`), and 2.x's Node ≥20
+  requirement is already met by our `engines`. Temporary until the SDK widens
+  its range ([typescript-sdk#2531](https://github.com/modelcontextprotocol/typescript-sdk/issues/2531))
+  or we move to SDK v2. `npm audit --omit=dev` now reports 0 vulnerabilities.
+
 ## [0.1.0] - 2026-07-14
 
 ### Added
