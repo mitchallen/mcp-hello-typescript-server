@@ -21,6 +21,23 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   requirement is already met by our `engines`. Temporary until the SDK widens
   its range ([typescript-sdk#2531](https://github.com/modelcontextprotocol/typescript-sdk/issues/2531))
   or we move to SDK v2. `npm audit --omit=dev` now reports 0 vulnerabilities.
+- Bumped three more transitive dependencies (all lockfile-only, within their
+  parents' existing ranges) to clear a failing `npm-audit` run:
+  - `fast-uri` `3.1.4` → `3.1.5` (via `ajv`) for the high-severity
+    [GHSA-7p8r-x3mc-p8w7](https://github.com/advisories/GHSA-7p8r-x3mc-p8w7)
+    — a follow-on host-confusion bypass (backslash authority introducer) that
+    re-flagged the version the previous bump landed on.
+  - `ip-address` `10.2.0` → `10.4.0` (via `express-rate-limit`) for the
+    high-severity SSRF / trust-boundary bypasses
+    [GHSA-mwp4-54f8-5fhr](https://github.com/advisories/GHSA-mwp4-54f8-5fhr),
+    [GHSA-4xrf-jv44-h6hh](https://github.com/advisories/GHSA-4xrf-jv44-h6hh),
+    and [GHSA-22jq-vg5j-6vgg](https://github.com/advisories/GHSA-22jq-vg5j-6vgg).
+  - `hono` `4.12.30` → `4.13.0` for the moderate
+    [GHSA-8j4g-w8fx-2239](https://github.com/advisories/GHSA-8j4g-w8fx-2239)
+    (ReDoS in the CORS middleware). Below the gate's `--audit-level=high`
+    threshold, but it came free with the same lockfile refresh.
+
+  `npm audit` (with and without `--omit=dev`) reports 0 vulnerabilities.
 
 ## [0.1.0] - 2026-07-14
 
