@@ -86,6 +86,41 @@ Two complementary gates, both in CI and reproducible locally:
 - **`scan-scheduled`** re-scans the published `:latest` daily so CVEs disclosed
   after build time still surface in the Security tab.
 
+### Dependabot: alerts + security updates are enabled
+
+The gates above only _detect_. Fixing transitive advisories is Dependabot's job,
+and that needs **two** separate features:
+
+- **Version updates** (`.github/dependabot.yml`, weekly) only bump what's
+  declared in `package.json` — our two direct dependencies. A transitive-only
+  package like `fast-uri` (`@modelcontextprotocol/sdk` → `ajv` → `fast-uri`) is
+  invisible to it.
+- **Security updates** (a repository setting, not a file) open the lockfile-only
+  PRs that clear transitive advisories. These were **disabled** until 2026-08-04,
+  which is why `fast-uri` had to be hand-bumped twice (#11, #18) after the daily
+  `npm-audit` cron went red. Both are on now:
+
+  ```sh
+  gh api -X PUT repos/mitchallen/<repo>/vulnerability-alerts       # alerts
+  gh api -X PUT repos/mitchallen/<repo>/automated-security-fixes   # security updates
+  ```
+
+  (Also enabled on the sibling `mcp-hello-go-server` and `mcp-hello-rust-server`;
+  `mcp-hello-server` already had them.)
+
+So the expected flow for a new transitive advisory is now: Dependabot opens a
+lockfile-only PR → `dependabot-auto-merge.yml` flags it (npm minor/patch is in
+scope) → branch protection holds it until `ci` + `image-scan` + `npm-audit` pass
+→ it lands unattended. Only reach for a manual `npm update <pkg>` if no PR
+appears, which usually means the fix is **outside** the parent's semver range —
+the case an `overrides` entry exists for (see below).
+
+Two consequences worth remembering: the Security tab reports the **whole** tree
+including dev dependencies, so it will show entries `npm audit --omit=dev` never
+fails on; and don't add a "floor" `overrides` entry for a package whose fix is
+already in range (e.g. `fast-uri`) — the lockfile already pins it, `npm ci` is
+deterministic, and the floor just becomes another thing to hand-bump.
+
 ### `@hono/node-server` override
 
 `package.json` pins a transitive `overrides` entry forcing
