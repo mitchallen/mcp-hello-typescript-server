@@ -6,12 +6,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-09-29
+
 ### Fixed
 
-- `package.json` now carries version `1.0.0`. `v1.0.0` was tagged from the
-  GitHub web UI instead of `make release`, so the version was never bumped and
-  the published `1.0.0` images report `0.1.0` from `server_info` and the MCP
-  handshake.
+- The image now reports its real version. `v1.0.0` was tagged from the GitHub
+  web UI instead of `make release`, so `package.json` was never bumped and the
+  published `1.0.0` images report `0.1.0` from `server_info` and the MCP
+  handshake. `package.json` is back in step, and `1.0.1` reports `1.0.1`.
 
 ### Added
 
@@ -19,11 +21,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   the pushed tag doesn't match the `package.json` version, so a release created
   outside `make release` can't publish a mislabeled image.
 
+### Changed
+
+- Approved the `esbuild` and `fsevents` install scripts in `allowScripts`,
+  silencing npm's unapproved-install-script warning on `npm ci`.
+
 ## [1.0.0] - 2026-09-29
 
 ### Known issues
 
-- The published `1.0.0` images report version `0.1.0` (see Unreleased → Fixed).
+- The published `1.0.0` images report version `0.1.0` (fixed in 1.0.1).
 
 ### Changed
 
@@ -96,6 +103,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   base image, and GitHub Actions, with low-risk updates auto-merged once CI
   passes.
 
-[unreleased]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.0...HEAD
+[unreleased]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/mitchallen/mcp-hello-typescript-server/releases/tag/v1.0.1
 [1.0.0]: https://github.com/mitchallen/mcp-hello-typescript-server/releases/tag/v1.0.0
 [0.1.0]: https://github.com/mitchallen/mcp-hello-typescript-server/releases/tag/v0.1.0
