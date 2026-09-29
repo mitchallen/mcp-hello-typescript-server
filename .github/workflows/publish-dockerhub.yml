@@ -10,6 +10,15 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Verify tag matches package.json version
+        run: |
+          tag=${GITHUB_REF#refs/tags/v}
+          version=$(jq -r .version package.json)
+          if [ "$tag" != "$version" ]; then
+            echo "::error::Tag v${tag} does not match package.json version ${version}. Release with 'make release', not the GitHub UI."
+            exit 1
+          fi
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
