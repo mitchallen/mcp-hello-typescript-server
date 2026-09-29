@@ -6,6 +6,30 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- `package.json` now carries version `1.0.0`. `v1.0.0` was tagged from the
+  GitHub web UI instead of `make release`, so the version was never bumped and
+  the published `1.0.0` images report `0.1.0` from `server_info` and the MCP
+  handshake.
+
+### Added
+
+- The `publish` and `publish-dockerhub` workflows now fail before building if
+  the pushed tag doesn't match the `package.json` version, so a release created
+  outside `make release` can't publish a mislabeled image.
+
+## [1.0.0] - 2026-09-29
+
+### Known issues
+
+- The published `1.0.0` images report version `0.1.0` (see Unreleased → Fixed).
+
+### Changed
+
+- Routine Dependabot bumps, including `@modelcontextprotocol/sdk` `1.30.1`,
+  `tsx`, `prettier`, `@types/node`, and GitHub Actions.
+
 ### Security
 
 - Bumped the transitive `fast-uri` (via `@modelcontextprotocol/sdk` → `ajv`)
@@ -72,5 +96,6 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   base image, and GitHub Actions, with low-risk updates auto-merged once CI
   passes.
 
-[unreleased]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v0.1.0...HEAD
+[unreleased]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/mitchallen/mcp-hello-typescript-server/releases/tag/v1.0.0
 [0.1.0]: https://github.com/mitchallen/mcp-hello-typescript-server/releases/tag/v0.1.0
