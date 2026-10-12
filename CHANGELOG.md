@@ -6,6 +6,26 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-10-12
+
+### Security
+
+- Transitive dependencies updated by the vulnerability fix in #51:
+  `proxy-addr` 2.0.7 → 2.0.8 (critical advisory), `hono` 4.13.7 → 4.13.13 and
+  `ip-address` 10.7.2 → 10.7.3. The published `1.0.1` images still carry the
+  old versions; this release ships the fixes.
+
+### Changed
+
+- `@modelcontextprotocol/sdk` 1.30.1 → 1.32.1 and `zod` 3 → 4 (the server's
+  tool schemas build and the test suite passes unchanged on zod 4).
+- Removed five transitive packages (`fast-uri`, `hono`, `ip-address`,
+  `proxy-addr`, `qs`) that #51 had promoted to direct `dependencies` though
+  nothing imports them; the lockfile still pins their patched versions (#52).
+- `package.json` is now `"private": true`. The package is distributed only as a
+  Docker image, so this blocks an accidental `npm publish` to the public
+  registry.
+
 ## [1.0.1] - 2026-09-29
 
 ### Fixed
