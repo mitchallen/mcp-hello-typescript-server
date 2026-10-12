@@ -1,6 +1,6 @@
 {
   "name": "mcp-hello-typescript-server",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": true,
   "description": "A minimal MCP server in TypeScript: a server_info health check and a multilingual greeting tool",
   "license": "MIT",
