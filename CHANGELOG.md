@@ -6,6 +6,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.0.4] - 2026-10-13
+
 ### Changed
 
 - **Fewer Dependabot PRs.** Each ecosystem (`npm`, `docker`, `github-actions`)
@@ -141,7 +143,10 @@ squash-merged separately), and it skipped this changelog._
   base image, and GitHub Actions, with low-risk updates auto-merged once CI
   passes.
 
-[unreleased]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.1...HEAD
+[unreleased]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.4...HEAD
+[1.0.4]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.3...v1.0.4
+[1.0.3]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.2...v1.0.3
+[1.0.2]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/mitchallen/mcp-hello-typescript-server/releases/tag/v1.0.1
 [1.0.0]: https://github.com/mitchallen/mcp-hello-typescript-server/releases/tag/v1.0.0
 [0.1.0]: https://github.com/mitchallen/mcp-hello-typescript-server/releases/tag/v0.1.0
