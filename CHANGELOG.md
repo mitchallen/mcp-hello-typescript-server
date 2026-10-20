@@ -6,6 +6,19 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.0.5] - 2026-10-20
+
+Dependency-refresh release; no behavior or API changes.
+
+### Changed
+
+- `zod` 4.6.5 → 4.6.7 (#56), the one production dependency in the group.
+- Dev: `@types/node` 26.6.4 → 26.6.5 and `prettier` 3.9.9 → 3.9.10 (#56).
+- CI: `github/codeql-action` 4.38.2 → 4.38.3 (#57).
+- CI: the required `scan` check now starts the built image and runs
+  `make docker-smoke` (an MCP `initialize`) against it, so an image that builds
+  but crashes at startup fails the PR (#58).
+
 ## [1.0.4] - 2026-10-13
 
 ### Changed
@@ -143,7 +156,8 @@ squash-merged separately), and it skipped this changelog._
   base image, and GitHub Actions, with low-risk updates auto-merged once CI
   passes.
 
-[unreleased]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.4...HEAD
+[unreleased]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.5...HEAD
+[1.0.5]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.1...v1.0.2
