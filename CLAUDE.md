@@ -164,25 +164,25 @@ or once we move to SDK v2, which splits transports into optional packages.
 - **Is a release due?** Compare `main` against the latest tag and ignore
   `.github/` and `*.md` — CI and docs changes don't reach the image. A
   `package-lock.json` change counts only if it moves the _production_ tree:
-  compare the non-dev entries (`jq
-'.packages|to_entries[]|select(.value.dev!=true)'`) at the tag vs now. #56
-  bumped `zod` (production) alongside `@types/node`/`prettier` (dev), which is
-  why v1.0.5 was cut. Dependabot auto-merges land on `main` without a release,
-  so a production bump sits unshipped until someone cuts one.
-- **`make release` does not touch the changelog links.** Add the `## [X.Y.Z] -
-YYYY-MM-DD` section _and_ the footer links — point `[unreleased]` at
-  `compare/vX.Y.Z...HEAD` and add `[X.Y.Z]: …/compare/vPREV...vX.Y.Z` — in one
-  `docs: changelog for vX.Y.Z` commit to `main`, then run `make release`. It
-  refuses to run without the section, creates the GitHub Release from it, and
-  the `main` push shows a "Bypassed rule violations" notice (admins are not
-  enforced).
-- **Publish time:** ~1.5 min (v1.0.5). Compare against `gh run list --workflow
-publish.yml` before treating a slow run as hung.
-- **Verify what shipped, not just the green runs.** `docker buildx imagetools
-inspect <image>:X.Y.Z` on both registries should list `linux/amd64` and
-  `linux/arm64`. Then `make docker-test TAG=X.Y.Z` pulls the _published_ image
-  and runs the MCP `initialize` smoke check, and the reply's `serverInfo` should
-  carry the released version — v1.0.5 replied
+  compare the non-dev entries
+  (`jq '.packages|to_entries[]|select(.value.dev!=true)'`) at the tag vs now.
+  #56 bumped `zod` (production) alongside `@types/node`/`prettier` (dev), which
+  is why v1.0.5 was cut. Dependabot auto-merges land on `main` without a
+  release, so a production bump sits unshipped until someone cuts one.
+- **`make release` does not touch the changelog links.** Add the
+  `## [X.Y.Z] - YYYY-MM-DD` section _and_ the footer links — point
+  `[unreleased]` at `compare/vX.Y.Z...HEAD` and add
+  `[X.Y.Z]: …/compare/vPREV...vX.Y.Z` — in one `docs: changelog for vX.Y.Z`
+  commit to `main`, then run `make release`. It refuses to run without the
+  section, creates the GitHub Release from it, and the `main` push shows a
+  "Bypassed rule violations" notice (admins are not enforced).
+- **Publish time:** ~1.5 min (v1.0.5). Compare against
+  `gh run list --workflow publish.yml` before treating a slow run as hung.
+- **Verify what shipped, not just the green runs.**
+  `docker buildx imagetools inspect <image>:X.Y.Z` on both registries should
+  list `linux/amd64` and `linux/arm64`. Then `make docker-test TAG=X.Y.Z` pulls
+  the _published_ image and runs the MCP `initialize` smoke check, and the
+  reply's `serverInfo` should carry the released version — v1.0.5 replied
   `{"name":"mcp-hello-typescript-server","version":"1.0.5"}`.
 - **The required `scan` check now starts the container** (see above), so a PR
   whose image builds but won't serve MCP is caught before release, not after.
