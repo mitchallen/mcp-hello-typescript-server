@@ -6,6 +6,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.0.6] - 2026-10-22
+
+Security rebuild; no code, dependency or behavior changes.
+
+### Security
+
+- Rebuilt on the current `cgr.dev/chainguard/node` base, picking up Node.js
+  26.12.1 from the October 2026 Node.js security release (four high-severity
+  fixes, including the Brotli decoder out-of-bounds write CVE-2026-111497 and
+  two TLS hostname-verification bypasses). v1.0.5 was built on 2026-10-20, a
+  day before that release.
+
 ## [1.0.5] - 2026-10-20
 
 Dependency-refresh release; no behavior or API changes.
@@ -156,7 +168,8 @@ squash-merged separately), and it skipped this changelog._
   base image, and GitHub Actions, with low-risk updates auto-merged once CI
   passes.
 
-[unreleased]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.5...HEAD
+[unreleased]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.6...HEAD
+[1.0.6]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.2...v1.0.3
