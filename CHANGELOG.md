@@ -6,6 +6,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.0.8] - 2026-11-04
+
+Automated dependency release; no code changes.
+
+### Changed
+
+- ci: Bump github/codeql-action from 4.38.3 to 4.39.0 in the actions-minor-patch group (#60)
+- ci: weekly auto-release of bot-merged dependency updates (#61)
+- deps: Bump @hono/node-server from 2.0.11 to 2.1.6 (#62)
+- deps: bump @modelcontextprotocol/sdk from 1.32.1 to 1.32.2 in the npm-minor-patch group (#63)
+- ci: bump github/codeql-action from 4.39.0 to 4.39.1 in the actions-minor-patch group (#64)
+
 ## [1.0.6] - 2026-10-22
 
 Security rebuild; no code, dependency or behavior changes.
@@ -168,7 +180,8 @@ squash-merged separately), and it skipped this changelog._
   base image, and GitHub Actions, with low-risk updates auto-merged once CI
   passes.
 
-[unreleased]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.6...HEAD
+[unreleased]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.8...HEAD
+[1.0.8]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.7...v1.0.8
 [1.0.6]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.3...v1.0.4
