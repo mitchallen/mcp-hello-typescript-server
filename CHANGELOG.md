@@ -6,6 +6,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.0.9] - 2026-11-18
+
+Automated dependency release; no code changes.
+
+### Changed
+
+- ci: bump github/codeql-action from 4.39.1 to 4.39.2 in the actions-minor-patch group (#67)
+- deps: bump @types/node from 26.6.5 to 26.6.6 in the npm-minor-patch group (#66)
+- deps: bump hono from 4.13.13 to 4.13.18 (#68)
+- ci: bump github/codeql-action from 4.39.2 to 4.39.3 in the actions-minor-patch group (#69)
+
 ## [1.0.8] - 2026-11-04
 
 Automated dependency release; no code changes.
@@ -180,7 +191,8 @@ squash-merged separately), and it skipped this changelog._
   base image, and GitHub Actions, with low-risk updates auto-merged once CI
   passes.
 
-[unreleased]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.8...HEAD
+[unreleased]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.9...HEAD
+[1.0.9]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.8...v1.0.9
 [1.0.8]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.7...v1.0.8
 [1.0.6]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/mitchallen/mcp-hello-typescript-server/compare/v1.0.4...v1.0.5
